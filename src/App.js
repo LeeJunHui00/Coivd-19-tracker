@@ -7,6 +7,7 @@ import {
   CardContent,
 } from "@material-ui/core";
 import InfoBox from './InfoBox';
+import Map from './Map';
 import './App.css';
 
 function App() {
@@ -38,29 +39,27 @@ function App() {
 
   return (
     <div className="app">
-      <div className="app__header">
-        <h1>Lets build a Covid 19 tracker</h1>
-        <FormControl className="app__dropdown">
-          <Select variant="outlined" onChange={onCountryChange} value={country}>
-            <MenuItem value="Worldwide">Worldwide</MenuItem>
-            {countries.map((country) => (
-              <MenuItem value={country.value}>{country.name}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
-      
-      <div className="app__stats">
-        <InfoBox title="Coronavirus cases" cases={123} total={2000}/>
-        <InfoBox title="Recovered" cases={1234} total={3000}/>
-        <InfoBox title="Deaths" cases={12345} total={4000}/>
-
+      <div className="app__left">
+        <div className="app__header">
+          <h1>Covid 19 tracker</h1>
+          <FormControl className="app__dropdown">
+            <Select variant="outlined" onChange={onCountryChange} value={country}>
+              <MenuItem value="Worldwide">Worldwide</MenuItem>
+              {countries.map((country) => (
+                <MenuItem value={country.value}>{country.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
         
-        {/* InforBoxs title="coronavirus cases" */}
-        {/* InforBoxs title="coronavirus recoveries" */ }
-        {/* InfoBoxs */}
-      </div>
+        <div className="app__stats">
+          <InfoBox title="Coronavirus cases" cases={123} total={2000}/>
+          <InfoBox title="Recovered" cases={1234} total={3000}/>
+          <InfoBox title="Deaths" cases={12345} total={4000}/>
+        </div>
 
+        <Map /> 
+      </div>
     </div>
   );
 }
