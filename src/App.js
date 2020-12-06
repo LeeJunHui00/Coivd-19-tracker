@@ -11,6 +11,9 @@ import Map from './Map';
 import './App.css';
 import Table from "./Table";
 import {sortData} from "./util";
+import LineGraph from "./LineGraph";
+// npm i react-chartjs-2 chart.js 다운로드 하기
+// npm i numeral
 
 
 function App() {
@@ -91,6 +94,7 @@ function App() {
           <h3>Live Cases by country</h3>
           <Table countries={tableData}/>
           <h3>Worldwide new cases</h3>
+          <LineGraph />
         </CardContent>
       </Card>
     </div>
