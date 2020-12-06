@@ -9,12 +9,23 @@ import {
 import InfoBox from './InfoBox';
 import Map from './Map';
 import './App.css';
+import Table from "./Table";
+import {sortData} from "./util";
+
 
 function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
+  const [tableData, setTableData] = useState([]);
 
+  useEffect(() => {
+    fetch("https://disease.sh/v3/covid-19/all")
+    .then((response) => response.json())
+    .then((data) => {
+      setCountryInfo(data);
+    });
+  }, [])
 
   useEffect(() => {    
     const getCountriesData = async () => {
@@ -26,6 +37,8 @@ function App() {
             value : country.countryInfo.iso2,
           }));
 
+          const sortedData = sortData(data);
+          setTableData(sortedData);
           setCountries(countries);
         });
       };
@@ -37,7 +50,7 @@ function App() {
     const countryCode = event.target.value;
 
     const url = 
-      countryCode === "worldwide" 
+      countryCode === "Worldwide" 
         ? "https://disease.sh/v3/covid-19/all" 
         : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
     
@@ -67,15 +80,16 @@ function App() {
         </div>
         
         <div className="app__stats">
-          <InfoBox title="Coronavirus cases" cases={123} total={2000}/>
-          <InfoBox title="Recovered" cases={1234} total={3000}/>
-          <InfoBox title="Deaths" cases={12345} total={4000}/>
+          <InfoBox title="Coronavirus cases" cases={countryInfo.todayCases} total={countryInfo.cases}/>
+          <InfoBox title="Recovered" cases={countryInfo.todayRecovered} total={countryInfo.recovered}/>
+          <InfoBox title="Deaths" cases={countryInfo.todayDeaths} total={countryInfo.deaths}/>
         </div>
         <Map /> 
       </div>
       <Card className="app__right">
         <CardContent>
           <h3>Live Cases by country</h3>
+          <Table countries={tableData}/>
           <h3>Worldwide new cases</h3>
         </CardContent>
       </Card>
