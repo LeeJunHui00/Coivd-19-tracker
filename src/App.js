@@ -22,6 +22,10 @@ function App() {
   const [country, setCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
   const [tableData, setTableData] = useState([]);
+  const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.4796 });
+  const [mapZoom, setMapZoom] = useState(3);
+  const [mapCountries, setMapCountries] = useState([]);
+  const [casesType, setCasesType] = useState("cases");
 
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/all")
@@ -41,8 +45,9 @@ function App() {
             value : country.countryInfo.iso2,
           }));
 
-          const sortedData = sortData(data);
+          let sortedData = sortData(data);
           setTableData(sortedData);
+          setMapCountries(data);
           setCountries(countries);
         });
       };
@@ -54,7 +59,7 @@ function App() {
     const countryCode = event.target.value;
 
     const url = 
-      countryCode === "Worldwide" 
+      countryCode === "worldwide" 
         ? "https://disease.sh/v3/covid-19/all" 
         : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
     
@@ -63,10 +68,12 @@ function App() {
       .then(data => {
         setCountry(countryCode);
         setCountryInfo(data);
-      })
+
+        setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+        setMapZoom(4);
+      });
   };
 
-  console.log("Country InFo >>", countryInfo);
 
   return (
     <div className="app">
@@ -75,7 +82,7 @@ function App() {
           <h1>Covid 19 tracker</h1>
           <FormControl className="app__dropdown">
             <Select variant="outlined" onChange={onCountryChange} value={country}>
-              <MenuItem value="Worldwide">Worldwide</MenuItem>
+              <MenuItem value="worldwide">Worldwide</MenuItem>
               {countries.map((country) => (
                 <MenuItem value={country.value}>{country.name}</MenuItem>
               ))}
@@ -89,14 +96,19 @@ function App() {
           <InfoBox title="Deaths" cases={countryInfo.todayDeaths} total={countryInfo.deaths}/>
         </div>
         
-        <Map /> 
+        <Map
+          countries={mapCountries}
+          casesType={casesType}
+          center={mapCenter}
+          zoom={mapZoom}
+        /> 
       </div>
       <Card className="app__right">
         <CardContent>
           <h3>Live Cases by country</h3>
           <Table countries={tableData}/>
           <h3>Worldwide new cases</h3>
-          <LineGraph />
+          <LineGraph casesType={casesType}/>
         </CardContent>
       </Card>
     </div>
