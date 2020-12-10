@@ -13,7 +13,7 @@ import {sortData} from "./util";
 import LineGraph from "./LineGraph";
 import Map from "./Map";
 import "leaflet/dist/leaflet.css";
-//npm i react-leaflet 다운로드
+//npm i react-leaflet   1.6.0 download
 //npm i leaflet
 
 
@@ -37,22 +37,22 @@ function App() {
 
   useEffect(() => {    
     const getCountriesData = async () => {
-      await fetch ("https://disease.sh/v3/covid-19/countries")
-      .then((response) => response.json())
-      .then((data) => {
-        const countries = data.map((country) => ({
-            name : country.country,
-            value : country.countryInfo.iso2,
-          }));
+      fetch ("https://disease.sh/v3/covid-19/countries")
+        .then((response) => response.json())
+        .then((data) => {
+          const countries = data.map((country) => ({
+              name : country.country,
+              value : country.countryInfo.iso2,
+            }));
 
-          let sortedData = sortData(data);
-          setTableData(sortedData);
-          setMapCountries(data);
-          setCountries(countries);
-        });
-      };
-      
-      getCountriesData();
+            let sortedData = sortData(data);
+            setTableData(sortedData);
+            setMapCountries(data);
+            setCountries(countries);
+          });
+        };
+        
+        getCountriesData();
     }, []);
 
   const onCountryChange = async (event) => {
@@ -69,8 +69,10 @@ function App() {
         setCountry(countryCode);
         setCountryInfo(data);
 
-        setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
-        setMapZoom(4);
+        countryCode === "worldwide"
+          ? setMapCenter([34.80746, -40.4796])
+          : setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+        // setMapZoom(4);
       });
   };
 
@@ -81,7 +83,11 @@ function App() {
         <div className="app__header">
           <h1>Covid 19 tracker</h1>
           <FormControl className="app__dropdown">
-            <Select variant="outlined" onChange={onCountryChange} value={country}>
+            <Select
+              variant="outlined"
+              value={country}
+              onChange={onCountryChange}
+            >
               <MenuItem value="worldwide">Worldwide</MenuItem>
               {countries.map((country) => (
                 <MenuItem value={country.value}>{country.name}</MenuItem>
@@ -105,9 +111,9 @@ function App() {
       </div>
       <Card className="app__right">
         <CardContent>
-          <h3>Live Cases by country</h3>
+          <h3>Live by country</h3>
           <Table countries={tableData}/>
-          <h3>Worldwide new cases</h3>
+          <h3>Worldwide new {casesType}</h3>
           <LineGraph casesType={casesType}/>
         </CardContent>
       </Card>
