@@ -9,7 +9,7 @@ import {
 import InfoBox from './InfoBox';
 import './App.css';
 import Table from "./Table";
-import {sortData} from "./util";
+import {sortData, prettyPrintStat} from "./util";
 import LineGraph from "./LineGraph";
 import Map from "./Map";
 import "leaflet/dist/leaflet.css";
@@ -55,8 +55,8 @@ function App() {
         getCountriesData();
     }, []);
 
-  const onCountryChange = async (event) => {
-    const countryCode = event.target.value;
+  const onCountryChange = async (e) => {
+    const countryCode = e.target.value;
 
     const url = 
       countryCode === "worldwide" 
@@ -72,7 +72,7 @@ function App() {
         countryCode === "worldwide"
           ? setMapCenter([34.80746, -40.4796])
           : setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
-        // setMapZoom(4);
+        setMapZoom(4);
       });
   };
 
@@ -97,9 +97,28 @@ function App() {
         </div>
         
         <div className="app__stats">
-          <InfoBox title="Coronavirus cases" cases={countryInfo.todayCases} total={countryInfo.cases}/>
-          <InfoBox title="Recovered" cases={countryInfo.todayRecovered} total={countryInfo.recovered}/>
-          <InfoBox title="Deaths" cases={countryInfo.todayDeaths} total={countryInfo.deaths}/>
+          <InfoBox
+            onClick={(e) => setCasesType("cases")}          
+            title="Coronavirus cases"
+            isRed
+            active={casesType === "cases"} 
+            cases={prettyPrintStat(countryInfo.todayCases)} 
+            total={prettyPrintStat(countryInfo.cases)}
+          />
+          <InfoBox
+            onClick={(e) => setCasesType("recovered")}         
+            title="Recovered" 
+            active={casesType === "recovered"}             
+            cases={prettyPrintStat(countryInfo.todayRecovered)} 
+            total={prettyPrintStat(countryInfo.recovered)}
+          />
+          <InfoBox 
+            onClick={(e) => setCasesType("deaths")}
+            title="Deaths" 
+            isRed
+            active={casesType === "deaths"}
+            cases={prettyPrintStat(countryInfo.todayDeaths)} 
+            total={prettyPrintStat(countryInfo.deaths)}/>
         </div>
         
         <Map
